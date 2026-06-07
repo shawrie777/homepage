@@ -1,0 +1,35 @@
+<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <!-- Magnifying glass lens (circle) - positioned left-center -->
+  <circle 
+    cx="160" 
+    cy="140" 
+    r="120" 
+    stroke="#ffffff" 
+    stroke-width="28" 
+    fill="transparent" />
+  
+  <!-- Inner lens highlight for depth (slightly smaller circle) -->
+  <circle 
+    cx="160" 
+    cy="140" 
+    r="105" 
+    stroke="#e5e5e5" 
+    stroke-width="8" 
+    fill="transparent" />
+
+  <!-- Magnifying glass handle - thick line with rounded end -->
+  <path 
+    d="M 265 235 L 330 290" 
+    stroke="#ffffff" 
+    stroke-width="28" 
+    stroke-linecap="round" 
+    stroke-linejoin="round" />
+
+  <!-- Handle highlight for 3D effect (thinner line on top) -->
+  <path 
+    d="M 267 237 L 328 287" 
+    stroke="#e5e5e5" 
+    stroke-width="12" 
+    stroke-linecap="round" />
+
+</svg>

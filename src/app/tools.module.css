@@ -1,0 +1,149 @@
+.keycode {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: center;
+    border: solid white 1px;
+    border-radius: 1rem;
+    padding: 1rem;
+    width: 15rem;
+
+    & p:last-of-type {
+        font-size: 2rem;
+    }
+}
+
+.calculator {
+    padding: 1.5rem;
+    border: solid white 1px;
+    border-radius: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: #111;
+    font-family: system-ui, sans-serif;
+    gap: 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+
+    & input[type="number"]::-webkit-outer-spin-button,
+    & input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+}
+
+/* Display */
+.calculatorDisplay {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 1.8rem;
+    text-align: right;
+    background: #000;
+    border-radius: 8px;
+    border: 1px solid #333;
+    font-family: "JetBrains Mono", monospace;
+}
+
+/* Button grid containers */
+.calcRow {
+    width: 100%;
+    display: grid;
+    gap: 8px;
+}
+
+/* Row sizes */
+.calcRow.math {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.calcRow.css {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.calcRow.trig {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+/* Buttons */
+.calcBtn {
+    padding: 10px 0;
+    border-radius: 8px;
+    background: #222;
+    border: 1px solid #333;
+    color: #eee;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    text-align: center;
+    user-select: none;
+}
+
+.calcBtn:hover {
+    background: #333;
+}
+
+.calcBtn:active {
+    transform: scale(0.96);
+}
+
+/* Group visual tweaks */
+.calcRow.css .calcBtn {
+    background: #1a1a1a;
+}
+
+.calcRow.trig .calcBtn {
+    background: #1c1c1c;
+}
+
+/* Optional: highlight active operator */
+.calcBtn.active {
+    background: #444;
+    border-color: #666;
+}
+
+.colourTool {
+    width: 15rem;
+    padding: 1rem;
+    border-radius: 1rem;
+    background: #050505;
+    color: #eee;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    border: solid white 1px
+}
+
+.colorRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.colorInput {
+    flex: 1;
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1px solid #333;
+    background: #111;
+    color: #eee;
+    font-family: "JetBrains Mono", monospace;
+    width: 0;
+}
+
+.copy {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #333;
+    background: #181818;
+    cursor: pointer;
+    transition: background 0.12s, transform 0.08s;
+}
+
+.copy:hover {
+    background: #262626;
+}
+
+.copy:active {
+    transform: scale(0.96);
+}
