@@ -9,11 +9,11 @@ import styles from "./git.module.css"
 // frontend common
 // graphing
 const repos : {name: string, target: string, icon: string}[] = [
-    {name: "Website", target: "https://github.com/MeVitae/mevitae.com", icon: "/website.svg"},
-    {name: "Analytics", target: "https://github.com/MeVitae/analytics-dashboard", icon: "/analytics.svg"},
-    {name: "Abstract Pages", target: "https://github.com/MeVitae/abstract-pages", icon: "/pages-icon.svg"},
-    {name: "Graphing", target: "https://github.com/MeVitae/graphing", icon: "/bar-chart.svg"},
-    {name: "Common", target: "https://github.com/MeVitae/frontend-common", icon: "/tools.svg"},
+    {name: "Website", target: "https://github.com/MeVitae/mevitae.com", icon: "./website.svg"},
+    {name: "Analytics", target: "https://github.com/MeVitae/analytics-dashboard", icon: "./analytics.svg"},
+    {name: "Abstract Pages", target: "https://github.com/MeVitae/abstract-pages", icon: "./pages-icon.svg"},
+    {name: "Graphing", target: "https://github.com/MeVitae/graphing", icon: "./bar-chart.svg"},
+    {name: "Common", target: "https://github.com/MeVitae/frontend-common", icon: "./tools.svg"},
 ];
 export default function GitLinks() {
     const svgRef = useRef<SVGSVGElement>(null);
@@ -34,7 +34,7 @@ export default function GitLinks() {
     }, [svgRef]);
 
     return <div className={styles.outer}>
-        <img src="/github.svg" alt="" className={styles.gitHub} style={{top: logoPos?.y, left: logoPos?.x}}/>
+        <img src="./github.svg" alt="" className={styles.gitHub} style={{top: logoPos?.y, left: logoPos?.x}}/>
         <svg ref={svgRef} width={900} height={300} viewBox="0 0 900 300" fill="transparent">
     	    <path d="M 0 50 Q 450 300 900 50" stroke="transparent"/>
         </svg>
@@ -50,10 +50,10 @@ function GitIcon({name, target, icon, position}: {name: string, target: string, 
             <img src={icon} alt={name} title={name} onMouseEnter={()=>setHovered(true)}/>
         </a>
         <a href={`${target}/issues?q=sort%3Aupdated-desc+is%3Aissue+is%3Aopen+`}>
-            <img src={"issues.svg"} alt=""/>
+            <img src={"./issues.svg"} alt=""/>
         </a>
         <a href={`${target}/pulls?q=sort%3Aupdated-desc+is%3Apr+is%3Aopen+`}>
-            <img src={"pr.svg"} alt="" />
+            <img src={"./pr.svg"} alt="" />
         </a>
 
         <div className={styles.issueLine} />
