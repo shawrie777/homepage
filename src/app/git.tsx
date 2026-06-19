@@ -34,7 +34,9 @@ export default function GitLinks() {
     }, [svgRef]);
 
     return <div className={styles.outer}>
-        <img src="./github.svg" alt="" className={styles.gitHub} style={{top: logoPos?.y, left: logoPos?.x}}/>
+        <a href="https://github.com/MeVitae" target="_blank" className={styles.gitHub} style={{top: logoPos?.y, left: logoPos?.x}}>
+            <img src="./github.svg" alt="GitHub"/>
+        </a>
         <svg ref={svgRef} width={900} height={300} viewBox="0 0 900 300" fill="transparent">
     	    <path d="M 0 50 Q 450 300 900 50" stroke="transparent"/>
         </svg>
