@@ -6,6 +6,8 @@ import Meet from "./meet";
 import KeyCode from "./keyCode";
 import Calculator from "./calculator";
 import Colours from "./colours";
+import { TickTick } from "./ticktick";
+import { Suspense } from "react";
 
 export default function Home() {
 	return <>
@@ -18,5 +20,8 @@ export default function Home() {
             <Colours />
         </div>
         <Meet />
+        <Suspense>
+            <TickTick />
+        </Suspense>
   	</>;
 }
