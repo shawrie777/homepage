@@ -27,9 +27,15 @@ export type TaskBase = {
     kind?: Kind,
 }
 
-export type ApiTask = TaskBase & {dueDate?: string};
+export type ApiTask = TaskBase & {
+    startDate?: string | null,
+    dueDate?: string | null,
+};
 
-export type Task = TaskBase & {dueDate?: Date};
+export type Task = TaskBase & {
+    startDate?: Date | null,
+    dueDate?: Date | null,
+};
 
 export type ViewMode = "list" | "kanban" | "timeline";
 export type Permission = "read" | "write" | "comment";

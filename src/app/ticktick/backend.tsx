@@ -162,16 +162,32 @@ export function useCompleteTask() {
     })
 }
 
+function formatApiDate(date?: Date | null): string | null | undefined {
+    if (date === null) return null;
+    if (!date || isNaN(date.getTime())) return undefined;
+
+    return date.toISOString().replace(/\.\d{3}Z$/, "+0000");
+}
+
+function parseApiDate(date?: string | null): Date | undefined {
+    if (!date) return undefined;
+
+    const parsed = new Date(date.replace(/([+-]\d{2})(\d{2})$/, "$1:$2"));
+    return isNaN(parsed.getTime()) ? undefined : parsed;
+}
+
 function toApiTask(task: Task) : ApiTask {
     return {
         ...task,
-        dueDate: task.dueDate && !isNaN(task.dueDate.getTime()) ? task.dueDate?.toISOString().replace(/\.\d{3}Z$/, "+0000") : undefined,
+        startDate: task.dueDate === null ? null : formatApiDate(task.startDate),
+        dueDate: formatApiDate(task.dueDate),
     }
 };
 
 function fromApiTask(task: ApiTask) : Task {
     return {
         ...task,
-        dueDate: task.dueDate ? new Date(task.dueDate.replace(/([+-]\d{2})(\d{2})$/, "$1:$2")) : undefined,
+        startDate: parseApiDate(task.startDate),
+        dueDate: parseApiDate(task.dueDate),
     }
 }

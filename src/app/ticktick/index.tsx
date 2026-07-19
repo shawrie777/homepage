@@ -99,30 +99,65 @@ function compareDates(a: Date, b: Date) {
     return a.getDate() - b.getDate();
 }
 
-function nextMonday(): Date {
-    const result = new Date();
+function isValidDate(date?: Date | null): date is Date {
+    return date instanceof Date && !isNaN(date.getTime());
+}
 
-    const daysUntilMonday = (8 - result.getDay()) % 7 || 7;
-    result.setDate(result.getDate() + daysUntilMonday);
+function startOfLocalDay(date: Date): Date {
+    const result = new Date(date);
     result.setHours(0,0,0,0);
-
     return result;
 }
 
-function dueDateLabel(date?: Date) {
-    if (!date || isNaN(date.getTime())) return null;
+function addDays(date: Date, days: number): Date {
+    const result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+}
 
-    const today = new Date();
-    today.setHours(0,0,0,0);
-    const monday = nextMonday().getTime();
+function nextMonday(from = new Date()): Date {
+    const result = startOfLocalDay(from);
 
-    if (date.getMonth() === today.getMonth() && date.getDate() === today.getDate()) return "Today";
-    if (Math.abs(date.getTime() - today.getTime()) <= (24 * 60 * 60 * 1000)) return "Tomorrow";
-    if (date.getTime() >= monday && date.getTime() < monday + 7*24*60*60*1000) return "Next Week";
+    const daysUntilMonday = (8 - result.getDay()) % 7 || 7;
 
+    return addDays(result, daysUntilMonday);
+}
+
+function dueDateBucket(date?: Date | null): "clear" | "today" | "tomorrow" | "nextWeek" | "custom" {
+    if (!isValidDate(date)) return "clear";
+
+    const today = startOfLocalDay(new Date());
+    const tomorrow = addDays(today, 1);
+    const nextWeekStart = nextMonday(today);
+    const nextWeekEnd = addDays(nextWeekStart, 7);
+
+    if (compareDates(date, today) === 0) return "today";
+    if (compareDates(date, tomorrow) === 0) return "tomorrow";
+    if (compareDates(date, nextWeekStart) >= 0 && compareDates(date, nextWeekEnd) < 0) return "nextWeek";
+
+    return "custom";
+}
+
+function dueDateLabel(date?: Date | null) {
+    const bucket = dueDateBucket(date);
+    if (bucket === "clear") return null;
+    if (bucket === "today") return "Today";
+    if (bucket === "tomorrow") return "Tomorrow";
+    if (bucket === "nextWeek") return "Next Week";
+
+    if (!isValidDate(date)) return null;
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const day = String(date.getDate()).padStart(2, "0");
     return `${day}/${month}`;
+}
+
+function dateFromInputValue(value: FormDataEntryValue | null): Date | null {
+    if (typeof value !== "string" || !value) return null;
+
+    const [year, month, day] = value.split("-").map(Number);
+    if (!year || !month || !day) return null;
+
+    return new Date(year, month - 1, day);
 }
 
 function Tasks({projectId} : {projectId: string}) {
@@ -181,6 +216,10 @@ function Tasks({projectId} : {projectId: string}) {
         if (!quickMenu) return;
         updateTask.mutate({task: {...quickMenu.task, ...changes}});
         setQuickMenu(null);
+    };
+
+    const updateQuickDueDate = (dueDate: Date | null) => {
+        updateQuickTask({startDate: dueDate, dueDate});
     };
 
     useEffect(() => {
@@ -249,8 +288,8 @@ function Tasks({projectId} : {projectId: string}) {
                                 setEditing(task);
                             }}
                         >
-                            <span className={classNames(styles.taskText, task.dueDate && compareDates(new Date(), task.dueDate) > 0 && styles.overdue)}>{task.title}</span>
-                            {task.dueDate !== undefined && <span className={styles.dueBadge}>{dueDateLabel(task.dueDate)}</span>}
+                            <span className={classNames(styles.taskText, isValidDate(task.dueDate) && compareDates(new Date(), task.dueDate) > 0 && styles.overdue)}>{task.title}</span>
+                            <TaskDueBadge dueDate={task.dueDate} />
                         </button>
                         <button
                             className={styles.deleteTask}
@@ -279,10 +318,17 @@ function Tasks({projectId} : {projectId: string}) {
         {quickMenu && <QuickEditMenu
             menu={quickMenu}
             onPriority={(priority) => updateQuickTask({priority})}
-            onDueDate={(dueDate) => updateQuickTask({dueDate})}
+            onDueDate={updateQuickDueDate}
         />}
         {editing && <TaskModal task={editing} close={() => setEditing(null)}/>}    
     </>
+}
+
+function TaskDueBadge({dueDate}: {dueDate?: Date | null}) {
+    const label = dueDateLabel(dueDate);
+    if (!label) return null;
+
+    return <span className={styles.dueBadge}>{label}</span>;
 }
 
 function QuickEditMenu({
@@ -292,30 +338,27 @@ function QuickEditMenu({
 }: {
     menu: PreviewPos,
     onPriority: (priority: number) => void,
-    onDueDate: (dueDate?: Date) => void,
+    onDueDate: (dueDate: Date | null) => void,
 }) {
     const currentDueDate = menu.task.dueDate;
+    const currentDueDateBucket = dueDateBucket(currentDueDate);
     const priorityOptions = [
         {value: 0, className: "priorityNone"},
         {value: 1, className: "priorityLow"},
         {value: 3, className: "priorityMedium"},
         {value: 5, className: "priorityHigh"},
     ];
-    const today = new Date();
-    today.setHours(0,0,0,0);
-    const tomorrow = today;
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const nextWeekStart = nextMonday();
-    const nextWeekEnd = nextMonday();
-    nextWeekEnd.setDate(nextWeekEnd.getDate() + 7);
+    const today = startOfLocalDay(new Date());
+    const tomorrow = addDays(today, 1);
+    const nextWeekStart = nextMonday(today);
     const dueOptions = [
-        {label: "Today", value: today, condition: (!!currentDueDate && compareDates(currentDueDate, today) === 0)},
-        {label: "Tomorrow", value: tomorrow, condition: (!!currentDueDate && compareDates(currentDueDate, tomorrow) === 0)},
+        {label: "Today", value: today, condition: currentDueDateBucket === "today"},
+        {label: "Tomorrow", value: tomorrow, condition: currentDueDateBucket === "tomorrow"},
         {
-            label: "Next week",
+            label: "Next Week",
             value: nextWeekStart,
-            condition: (!!currentDueDate && compareDates(currentDueDate, nextWeekStart) > 0 && compareDates(currentDueDate, nextWeekEnd) < 0)},
-        {label: "Clear", value: undefined, condition: currentDueDate === undefined},
+            condition: currentDueDateBucket === "nextWeek"},
+        {label: "Clear", value: null, condition: currentDueDateBucket === "clear"},
     ];
 
     return <div
@@ -421,11 +464,13 @@ function TaskModal({task, close} : {task: Task, close: ()=>void}) {
         const title = (data.get("title")! as string).trim();
         if (!title) return;
 
+        const dueDate = dateFromInputValue(data.get("dueDate"));
         const updatedTask : Task = {
             ...task,
             title,
             content: data.get("content")! as string,
-            dueDate: new Date(data.get("dueDate")! as string),
+            startDate: dueDate,
+            dueDate,
         }
         updateTask.mutate({task: updatedTask});
         close();
