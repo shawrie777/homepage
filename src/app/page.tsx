@@ -8,6 +8,7 @@ import Calculator from "./calculator";
 import Colours from "./colours";
 import { TickTick } from "./ticktick";
 import { Suspense } from "react";
+import { GitHints } from "./githints";
 
 export default function Home() {
 	return <>
@@ -23,5 +24,6 @@ export default function Home() {
         <Suspense>
             <TickTick />
         </Suspense>
+        <GitHints />
   	</>;
 }
